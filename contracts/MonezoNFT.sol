@@ -11,15 +11,6 @@ import "@openzeppelin/contracts/utils/introspection/ERC165.sol";
 import "@openzeppelin/contracts/utils/math/SafeMath.sol";
 import "@openzeppelin/contracts/token/ERC721/extensions/IERC721Metadata.sol";
 
-/**
-    4. Минт для того, чтобы nft были пронумерованы (Lazy minting) + Delayed reveal
-
-    1. Стейкинг - нужен контракт токена
-    3. Сненпшот - сделать чтобы адрес - баланс
- */
-
-// https://medium.com/@0xNicko/how-to-create-a-rarity-chart-of-your-nfts-only-using-excel-35351e59ecf1 - рарность НФТ
-
 contract ERC721Monezo is Context, ERC165, IERC721, IERC721Metadata {
     using Address for address;
     using Strings for uint256;
@@ -30,10 +21,10 @@ contract ERC721Monezo is Context, ERC165, IERC721, IERC721Metadata {
     using Counters for Counters.Counter;
     uint256 public constant MAX_TOKENS = 132;
     uint256 private _tokenPrice = 10000000000000000; //0.01 ETH
-    uint256 private platformFee;
+    uint256 private platformFee = 3;
     string private _baseURI;
-    string private _name;
-    string private _symbol;
+    string private constant _NAME = "MonezoNFT";
+    string private constant _SYMBOL = "MT";
     bool public saleIsActive = true;
     address private _creater;
     mapping(uint256 => address) private _owners;
@@ -69,16 +60,8 @@ contract ERC721Monezo is Context, ERC165, IERC721, IERC721Metadata {
         address indexed buyer
     );
 
-    constructor(
-        string memory name_,
-        string memory symbol_,
-        uint256 _platformFee
-    ) {
-        _name = name_;
-        _symbol = symbol_;
+    constructor() {
         _creater = _msgSender();
-        require(_platformFee <= 10000, "can't more than 10 percent");
-        platformFee = _platformFee;
     }
 
     modifier onlyCreater() {
@@ -111,12 +94,12 @@ contract ERC721Monezo is Context, ERC165, IERC721, IERC721Metadata {
         return owner;
     }
 
-    function name() public view returns (string memory) {
-        return _name;
+    function name() public pure returns (string memory) {
+        return _NAME;
     }
 
-    function symbol() public view returns (string memory) {
-        return _symbol;
+    function symbol() public pure returns (string memory) {
+        return _SYMBOL;
     }
 
     function tokenURI(uint256 tokenId) public view returns (string memory) {
@@ -382,7 +365,7 @@ contract ERC721Monezo is Context, ERC165, IERC721, IERC721Metadata {
     }
 
     function totalSupply() public view returns (uint256) {
-        return _nextTokenId.current() - 1;
+        return _nextTokenId.current();
     }
 
     function listNft(uint256 _tokenId, uint256 _price) public {

@@ -1,13 +1,11 @@
 // SPDX-License-Identifier: MIT
-// OpenZeppelin Contracts (last updated v4.7.0) (token/ERC20/extensions/ERC20Snapshot.sol)
-
 pragma solidity ^0.8.0;
 
 import "@openzeppelin/contracts/utils/Arrays.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
 import "./MonezoNFT.sol";
 
-contract ERC20Snapshot is ERC721Monezo {
+contract SnapshotMonezo is ERC721Monezo {
     using Arrays for uint256[];
     using Counters for Counters.Counter;
 
@@ -17,21 +15,35 @@ contract ERC20Snapshot is ERC721Monezo {
     }
 
     mapping(address => Snapshots) private _accountBalanceSnapshots;
+    mapping(uint256 => address[]) private _adressSnapshot;
     Snapshots private _totalSupplySnapshots;
 
     Counters.Counter private _currentSnapshotId;
 
     event Snapshot(uint256 id);
 
-    //!передаелать
-    constructor() ERC721Monezo("SS", "S", 3) {}
-
-    function _snapshot() public returns (uint256) {
+    function _snapshot() public returns (uint256, address[] memory) {
         _currentSnapshotId.increment();
 
         uint256 currentId = _getCurrentSnapshotId();
         emit Snapshot(currentId);
-        return currentId;
+
+        uint256 suplay = totalSupply();
+        address[] memory snap = new address[](suplay);
+        for (uint i = 1; i <= suplay; i++) {
+            if (ownerOf(i) != address(0)) {
+                snap[i - 1] = ownerOf(i);
+            }
+        }
+
+        _adressSnapshot[currentId] = snap;
+        return (currentId, snap);
+    }
+
+    function showAddressSnap(
+        uint256 idSnap
+    ) public view returns (address[] memory) {
+        return _adressSnapshot[idSnap];
     }
 
     function _getCurrentSnapshotId() internal view virtual returns (uint256) {
