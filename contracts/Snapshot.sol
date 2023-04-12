@@ -20,13 +20,12 @@ contract SnapshotMonezo is ERC721Monezo {
 
     Counters.Counter private _currentSnapshotId;
 
-    event Snapshot(uint256 id);
+    event Snapshot(uint256 id, address[] snap);
 
-    function _snapshot() public returns (uint256, address[] memory) {
+    function snapshot() public onlyCreater returns (uint256, address[] memory) {
         _currentSnapshotId.increment();
 
         uint256 currentId = _getCurrentSnapshotId();
-        emit Snapshot(currentId);
 
         uint256 suplay = totalSupply();
         address[] memory snap = new address[](suplay);
@@ -37,6 +36,8 @@ contract SnapshotMonezo is ERC721Monezo {
         }
 
         _adressSnapshot[currentId] = snap;
+
+        emit Snapshot(currentId, snap);
         return (currentId, snap);
     }
 

@@ -271,7 +271,7 @@ contract ERC721Monezo is Context, ERC165, IERC721, IERC721Metadata {
 
     function _transfer(address from, address to, uint256 tokenId) internal {
         require(
-            ERC721Monezo.ownerOf(tokenId) == from,
+            ownerOf(tokenId) == from,
             "ERC721: transfer from incorrect owner"
         );
         require(to != address(0), "ERC721: transfer to the zero address");
@@ -418,6 +418,14 @@ contract ERC721Monezo is Context, ERC165, IERC721, IERC721Metadata {
         }("");
 
         require(success, "Transfer failed.");
+
+        if (msg.value > totalPrice) {
+            (bool successRefand, ) = payable(msg.sender).call{
+                value: msg.value - totalPrice
+            }("");
+
+            require(successRefand, "Transfer failed.");
+        }
 
         _transfer(listedNft.seller, msg.sender, listedNft.tokenId);
 
