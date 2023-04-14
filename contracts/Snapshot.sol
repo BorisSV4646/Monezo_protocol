@@ -30,8 +30,8 @@ contract SnapshotMonezo is ERC721Monezo {
         uint256 suplay = totalSupply();
         address[] memory snap = new address[](suplay);
         for (uint i = 1; i <= suplay; i++) {
-            if (ownerOf(i) != address(0)) {
-                snap[i - 1] = ownerOf(i);
+            if (_ownerOf(i) != address(0)) {
+                snap[i - 1] = _ownerOf(i);
             }
         }
 

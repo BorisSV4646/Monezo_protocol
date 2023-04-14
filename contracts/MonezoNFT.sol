@@ -7,11 +7,18 @@ import "@openzeppelin/contracts/utils/Address.sol";
 import "@openzeppelin/contracts/utils/Context.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
 import "@openzeppelin/contracts/utils/Strings.sol";
+import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 import "@openzeppelin/contracts/utils/introspection/ERC165.sol";
 import "@openzeppelin/contracts/utils/math/SafeMath.sol";
 import "@openzeppelin/contracts/token/ERC721/extensions/IERC721Metadata.sol";
 
-contract ERC721Monezo is Context, ERC165, IERC721, IERC721Metadata {
+contract ERC721Monezo is
+    Context,
+    ERC165,
+    IERC721,
+    IERC721Metadata,
+    ReentrancyGuard
+{
     using Address for address;
     using Strings for uint256;
     using SafeMath for uint256;
@@ -399,7 +406,7 @@ contract ERC721Monezo is Context, ERC165, IERC721, IERC721Metadata {
         emit CancelListedNFT(_tokenId, msg.sender);
     }
 
-    function buyNFT(uint256 _tokenId) public payable {
+    function buyNFT(uint256 _tokenId) public payable nonReentrant {
         address seller = _ownerOf(_tokenId);
         ListNFT memory listedNft = listNfts[seller][_tokenId];
         require(seller != address(0), "ERC721: invalid token ID");

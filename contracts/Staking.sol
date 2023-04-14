@@ -33,6 +33,8 @@ contract ERC721Staking is Ownable, ReentrancyGuard, Pausable {
     mapping(uint256 => address) public stakerAddress;
 
     event Responce(bool indexed responce);
+    event Stake(address staker, uint256 _tokenId);
+    event WithDraw(address staker, uint256 _tokenId);
 
     constructor(IERC721 _nftCollection, IERC20 _rewardsToken) {
         nftCollection = _nftCollection;
@@ -61,6 +63,8 @@ contract ERC721Staking is Ownable, ReentrancyGuard, Pausable {
         stakerAddress[_tokenId] = msg.sender;
 
         stakers[msg.sender].timeOfLastUpdate = block.timestamp;
+
+        emit Stake(msg.sender, _tokenId);
     }
 
     function withdraw(uint256 _tokenId) external nonReentrant {
@@ -97,6 +101,8 @@ contract ERC721Staking is Ownable, ReentrancyGuard, Pausable {
         nftCollection.transferFrom(address(this), msg.sender, _tokenId);
 
         stakers[msg.sender].timeOfLastUpdate = block.timestamp;
+
+        emit WithDraw(msg.sender, _tokenId);
     }
 
     function claimRewards() external {
@@ -107,6 +113,7 @@ contract ERC721Staking is Ownable, ReentrancyGuard, Pausable {
         stakers[msg.sender].unclaimedRewards = 0;
 
         // rewardsToken.transfer(msg.sender, rewards);
+        // !это контракт должен быть creator erc20 tokena
         (bool successReavrded, ) = address(rewardsToken).call(
             abi.encodeWithSignature(
                 "_mint(address,uint256)",
