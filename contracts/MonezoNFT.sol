@@ -29,7 +29,8 @@ contract ERC721Monezo is
     uint256 public constant MAX_TOKENS = 132;
     uint256 private _tokenPrice = 10000000000000000; //0.01 ETH
     uint256 private platformFee = 3;
-    string private _baseURI;
+    string private _baseURI =
+        "ipfs://bafybeie4eze2qw7hqrfsuynsibzatzpjw5pwdbccnjodx7efkjklgem4tq/";
     string private constant _NAME = "MonezoNFT";
     string private constant _SYMBOL = "MT";
     bool public saleIsActive = true;

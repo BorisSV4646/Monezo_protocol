@@ -35,4 +35,8 @@ module.exports = {
   etherscan: {
     apiKey: process.env.ETHERSCAN_API_KEY,
   },
+  // verify: {
+  //   constructorArguments: [],
+  //   network: "goerly",
+  // },
 };

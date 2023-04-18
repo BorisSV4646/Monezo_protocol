@@ -16,37 +16,38 @@ async function main() {
 
   console.log("Token ERC20 address:", TokenERC20.address);
 
+  verify(TokenERC20.address, InitialSuplay);
+
   const SnapshotMonezo = await ethers.getContractFactory(
     "SnapshotMonezo",
     deployer
   );
-  const MonezoMainContract = await SnapshotMonezo.deploy(
-    "SnapshotMonezo",
-    "ST",
-    3,
-    TokenERC20.address
-  );
+  const MonezoMainContract = await SnapshotMonezo.deploy();
 
-  await MonezoMainContract.deployed(
-    "SnapshotMonezo",
-    "ST",
-    3,
-    TokenERC20.address
-  );
+  await MonezoMainContract.deployed();
 
   console.log("Main contract address:", MonezoMainContract.address);
 
-  await TokenERC20.setNewCreater(MonezoMainContract.address);
+  const monezoStaking = await ethers.getContractFactory(
+    "ERC721Staking",
+    deployer
+  );
+  const paymentsMonezoStaking = await monezoStaking.deploy(
+    MonezoMainContract.address,
+    TokenERC20.address
+  );
+  await paymentsMonezoStaking.deployed(
+    MonezoMainContract.address,
+    TokenERC20.address
+  );
+
+  console.log("ERC721Staking address:", paymentsMonezoStaking.address);
+
+  await TokenERC20.setNewCreater(paymentsMonezoStaking.address);
 
   console.log(`Creator ERC20 contract set: ${await TokenERC20.creater()}`);
 
-  if (
-    !developmentChains.includes(network.name) &&
-    process.env.ETHERSCAN_API_KEY
-  ) {
-    log("Verifying...");
-    await verify(TokenERC721.address, deployer);
-  }
+  verify(MonezoMainContract.address, TokenERC20.address);
 }
 
 main().catch((error) => {
