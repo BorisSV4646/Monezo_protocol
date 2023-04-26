@@ -1,4 +1,5 @@
 import { NFTStorage, File } from "nft.storage";
+// https://nft.storage/files/
 
 async function main() {
   const NFT_STORAGE_KEY =
